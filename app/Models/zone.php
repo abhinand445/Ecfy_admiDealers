@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
-class Dealers extends Model
+class zone extends Model
 {
     //
-
-     use HasFactory;
-
+         use HasFactory;
+         
     protected $fillable = [
         'name',
         'coordinates',
@@ -26,4 +25,6 @@ class Dealers extends Model
         'increase_delivery_charge_message',
         'offline_payment'
     ];
+    
+   
 }

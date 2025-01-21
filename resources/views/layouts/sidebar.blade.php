@@ -57,7 +57,7 @@
                 <h4 class="text-section">Components</h4>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#base">
+                <a  href="{{ route('dealers.create') }}">
                   <i class="fas fa-layer-group"></i>
                   <p>Base</p>
                   <span class="caret"></span>

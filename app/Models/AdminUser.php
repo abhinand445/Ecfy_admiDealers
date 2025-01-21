@@ -9,6 +9,8 @@ class AdminUser extends Authenticatable
 {
     use Notifiable;
 
+    protected $connection = 'mysql2';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -29,4 +31,7 @@ class AdminUser extends Authenticatable
         'password',
         'remember_token',
     ];
+
+
+    
 }
