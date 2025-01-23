@@ -26,4 +26,19 @@ class Dealers extends Model
         'increase_delivery_charge_message',
         'offline_payment'
     ];
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
+      public function modules()
+    {
+        return $this->belongsTo(Modules::class);
+    }
 }

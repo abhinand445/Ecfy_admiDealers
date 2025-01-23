@@ -39,3 +39,5 @@ Route::get('/change-password', [DashboardController::class, 'changePassword'])->
 // dealers 
 
 Route::get('createDealers',[DealersController::class, 'createDealers'])->name('dealers.create');
+Route::post('/dealers/store', [DealersController::class, 'store'])->name('dealers.store');
+

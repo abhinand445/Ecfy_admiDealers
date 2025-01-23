@@ -116,12 +116,15 @@
             }
 
             .custom-upload-img img {
-                width: 110px;
+                width: 171px;
                 height: 110px;
                 border-radius: 10%;
                 border: 2px dashed #cccccc;
                 object-fit: cover;
                 margin-bottom: 10px;
+                margin-right: 50%;
+                margin-left: 20px;
+            }
             }
 
             .icon-file-group {
@@ -174,6 +177,7 @@
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
+
             }
 
             .btn--primary {
@@ -196,8 +200,26 @@
                 }
 
                 .custom-upload-img img {
-                    width: 80px;
+                    width: 106px;
                     height: 80px;
+                }
+            }
+
+            /* Responsive Buttons */
+
+            .btn-responsive {
+                padding: 10px 20px;
+                font-size: 16px;
+                width: auto;
+
+
+            }
+
+            @media (max-width: 768px) {
+                .btn-responsive {
+                    width: 100%;
+                    margin-bottom: 10px;
+
                 }
             }
         </style>
@@ -219,62 +241,71 @@
             </div>
             <!-- End Page Header -->
 
-            <form action="/admin/dealer/store" method="post" enctype="multipart/form-data" class="js-validate"
+            <form action="{{ route('dealers.store') }}" method="post" enctype="multipart/form-data" class="js-validate"
                 id="dealer_form" novalidate>
                 @csrf
 
                 <div class="row g-2">
+                    <!-- Store Information -->
                     <div class="col-lg-6">
                         <div class="card shadow--card-2">
                             <div class="card-body">
-                                <ul class="nav nav-tabs mb-4">
-                                    <li class="nav-item">
-                                        <a class="nav-link lang_link" href="#" id="en-link">English (EN)</a>
-                                    </li>
-                                </ul>
+                                <h4>Store Information</h4>
+                                <div class="form-group">
+                                    <label class="input-label" for="store_id">Store Name</label>
+                                    <select name="store_id" id="store_id" class="form-control" required>
+                                        <option value="" selected>Select stores</option>
+                                        @foreach ($stores as $store)
+                                            <option value="{{ $store->id }}">{{ $store->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('store_id')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                                
-
-                                <div class="lang_form" id="default-form">
-                                    <div class="form-group">
-                                        <label class="input-label" for="store_name">Store Name</label>
-                                        <input type="text" name="name" id="default_name" class="form-control"
-                                            placeholder="Store name" required>
-                                    </div>
-                                    <input type="hidden" name="lang" value="default">
-                                    <div class="form-group mb-0">
-                                        <label class="input-label" for="address_default">Address</label>
-                                        <textarea name="address" id="address_default" class="form-control min-h-90px" placeholder="Dealer address"></textarea>
-                                    </div>
+                                <div class="form-group">
+                                    <label class="input-label" for="address_default">Address</label>
+                                    <textarea name="address" id="address_default" class="form-control min-h-90px" placeholder="Dealer address" required></textarea>
+                                    @error('address')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Dealer Logo -->
                     <div class="col-lg-6">
                         <div class="card shadow--card-2">
                             <div class="card-header">
-                                <h5 class="card-title">
-                                    Dealer Logo
-                                </h5>
+                                <h5 class="card-title">Dealer Logo</h5>
                             </div>
                             <div class="card-body">
                                 <div class="custom-upload-img text-center">
                                     <label for="customFileEg1">Logo</label>
-                                    <img id="viewer" class="img--110 min-height-170px min-width-170px image--border"
-                                        src="https://app.ecfy.in/public/assets/admin/img/upload-img.png" alt="Logo image">
+                                    <label for="customFileEg1" style="margin-right: 45%">
+                                        <img id="viewer"
+                                            class="img--110 min-height-170px min-width-170px image--border cursor-pointer"
+                                            src="https://app.ecfy.in/public/assets/admin/img/upload-img.png"
+                                            alt="Logo image">
+                                    </label>
                                     <div class="icon-file-group mt-2">
                                         <div class="icon-file">
                                             <i class="tio-edit"></i>
                                             <input type="file" name="logo" id="customFileEg1"
-                                                class="custom-file-input" accept="image/*">
+                                                class="custom-file-input d-none" accept="image/*" required>
                                         </div>
                                     </div>
+                                    @error('logo')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Dealer Information -->
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
@@ -282,21 +313,22 @@
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
-
-                                  
+                                    <!-- Modules -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="input-label">Modules</label>
-
                                             <select name="module_id" id="module_id" class="form-control" required>
                                                 <option value="" selected>Select Module</option>
                                                 @foreach ($modules as $module)
                                                     <option value="{{ $module->id }}">{{ $module->module_name }}</option>
                                                 @endforeach
-
                                             </select>
+                                            @error('module_id')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
+                                    <!-- Zone -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="input-label">Zone</label>
@@ -305,17 +337,22 @@
                                                 @foreach ($zones as $zone)
                                                     <option value="{{ $zone->id }}">{{ $zone->name }}</option>
                                                 @endforeach
-
                                             </select>
+                                            @error('zone')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
-
+                                    <!-- Latitude and Longitude -->
                                     <h5 class="col-12 mt-3">Map and Store Coordinates</h5>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="latitude_store">Latitude Store</label>
                                             <input type="text" name="latitude_store" id="latitude_store"
                                                 class="form-control" placeholder="Enter Latitude" required>
+                                            @error('latitude_store')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -323,8 +360,12 @@
                                             <label for="longitude_store">Longitude Store</label>
                                             <input type="text" name="longitude_store" id="longitude_store"
                                                 class="form-control" placeholder="Enter Longitude" required>
+                                            @error('longitude_store')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
+                                    <!-- Map Placeholder -->
                                     <div class="col-12">
                                         <div id="map"
                                             style="width: 100%; height: 300px; background-color: #f3f3f3; border: 1px solid #ccc;">
@@ -335,96 +376,104 @@
                             </div>
                         </div>
 
+                        <!-- Account Information -->
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">Account Information</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
+                                    <!-- First Name -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="f_name">First Name</label>
+                                            <input type="text" name="f_name" id="f_name" class="form-control"
+                                                placeholder="First Name" required>
+                                            @error('f_name')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <!-- Last Name -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="l_name">Last Name</label>
+                                            <input type="text" name="l_name" id="l_name" class="form-control"
+                                                placeholder="Last Name" required>
+                                            @error('l_name')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <!-- Phone -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone">Phone Number</label>
                                             <input type="tel" name="phone" id="phone" class="form-control"
-                                                placeholder="Phone number" required>
+                                                placeholder="Phone Number" required>
+                                            @error('phone')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
+                                    <!-- Email -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="email">Email Address</label>
                                             <input type="email" name="email" id="email" class="form-control"
-                                                placeholder="Email address" required>
+                                                placeholder="Email Address" required>
+                                            @error('email')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
+                                    <!-- Password -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="password">Password</label>
                                             <input type="password" name="password" id="password" class="form-control"
                                                 placeholder="Password" required>
+                                            @error('password')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
+                                    <!-- Confirm Password -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="confirm_password">Confirm Password</label>
                                             <input type="password" name="confirm_password" id="confirm_password"
                                                 class="form-control" placeholder="Confirm Password" required>
+                                            <div class="text-danger" id="passwordError" style="display: none;">
+                                                Passwords do not match.
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="col-md-12 text-center mt-4">
+                            <button type="reset" class="btn btn-secondary btn-responsive" id="resetBtn">Reset</button>
+                            <button type="submit" class="btn btn-primary btn-responsive" id="submitBtn">Submit</button>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
-
-        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap&v=weekly" async>
-        </script>
-
-
-
         <script>
-            // Initialize and add the map
-            function initMap() {
-                // Default location (can be changed to any location)
-                const defaultLocation = {
-                    lat: -34.397,
-                    lng: 150.644
-                };
-
-                // Create a map centered at the default location
-                const map = new google.maps.Map(document.getElementById("map"), {
-                    zoom: 10,
-                    center: defaultLocation,
-                });
-
-                // Add a marker at the default location
-                const marker = new google.maps.Marker({
-                    position: defaultLocation,
-                    map: map,
-                    title: "Dealer Location",
-                });
-
-                // Listen for changes in latitude and longitude inputs and update map marker
-                const latitudeStoreInput = document.getElementById("latitude_store");
-                const longitudeStoreInput = document.getElementById("longitude_store");
-
-                latitudeStoreInput.addEventListener("change", updateMap);
-                longitudeStoreInput.addEventListener("change", updateMap);
-
-                function updateMap() {
-                    const latitude = parseFloat(latitudeStoreInput.value);
-                    const longitude = parseFloat(longitudeStoreInput.value);
-
-                    if (!isNaN(latitude) && !isNaN(longitude)) {
-                        const newLocation = {
-                            lat: latitude,
-                            lng: longitude
-                        };
-                        map.setCenter(newLocation);
-                        marker.setPosition(newLocation);
-                    }
+            // Password validation
+            $('#dealer_form').on('submit', function(e) {
+                const password = $('#password').val();
+                const confirmPassword = $('#confirm_password').val();
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    $('#passwordError').show();
+                } else {
+                    $('#passwordError').hide();
                 }
-            }
+            });
         </script>
 
     </body>
