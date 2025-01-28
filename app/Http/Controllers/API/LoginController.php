@@ -12,16 +12,16 @@ class LoginController extends Controller
 {
    public function login(Request $request): \Illuminate\Http\JsonResponse
 {
-    // Log incoming request data for debugging
+    
     \Log::info('Login Request Data:', $request->only('email', 'password'));
 
-    // Validate incoming request data
+    
     $request->validate([
         'email' => 'required|email',
         'password' => 'required|string|min:6',
     ]);
 
-    // Attempt to log the user in using plain password
+    
     if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
         $users = Auth::user();
         $token = $users->createToken('authToken')->plainTextToken;
@@ -34,7 +34,7 @@ class LoginController extends Controller
         ], 200);
     }
 
-    // Return an error response if login fails
+    
     return response()->json([
         'message' => 'Invalid credentials',
     ], 401);

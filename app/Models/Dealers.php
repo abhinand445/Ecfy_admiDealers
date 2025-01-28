@@ -2,43 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Database\Eloquent\Model;
 
 class Dealers extends Model
 {
-    //
+    use HasFactory;
 
-     use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'coordinates',
+     protected $fillable = [
+        'f_name',
+        'l_name',
+        'address',
+        'phone',
+        'email',
+        'logo',
+        'store_name',
+        'module_id',
+        'zone_id',
         'status',
-        'store_wise_topic',
-        'customer_wise_topic',
-        'deliveryman_wise_topic',
-        'cash_on_delivery',
-        'digital_payment',
-        'increased_delivery_fee',
-        'increased_delivery_fee_status',
-        'increase_delivery_charge_message',
-        'offline_payment'
+        'latitude',
+        'longitude',
     ];
 
+    
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function module()
+    {
+        return $this->belongsTo(Module::class);
     }
 
     public function zone()
     {
         return $this->belongsTo(Zone::class);
     }
-
-      public function modules()
-    {
-        return $this->belongsTo(Modules::class);
-    }
 }
+

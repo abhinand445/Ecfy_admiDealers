@@ -42,41 +42,27 @@ return [
             'synchronous' => null,
         ],
 
-        'mysql' => [
-            'driver' => 'mysql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ],
+       'mysql' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST', '127.0.0.1'),
+        'port' => env('DB_PORT', '3306'),
+        'database' => env('DB_DATABASE', 'admin_ecfy'), // Default database
+        'username' => env('DB_USERNAME', 'root'),
+        'password' => env('DB_PASSWORD', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+    ],
 
-        'mysql2' => [
-            'driver' => 'mysql',
-            'host' => env('DB_ECFY_HOST', '127.0.0.1'),
-            'port' => env('DB_ECFY_PORT', '3306'),
-            'database' => env('DB_ECFY_DATABASE', 'forge'),
-            'username' => env('DB_ECFY_USERNAME', 'forge'),
-            'password' => env('DB_ECFY_PASSWORD', ''),
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'strict' => true,
-            'engine' => null,
-        ], 
-
+    // 'ecfy_store' => [
+    //     'driver' => 'mysql',
+    //     'host' => env('DB_STORE_HOST', '127.0.0.1'),
+    //     'port' => env('DB_STORE_PORT', '3306'),
+    //     'database' => env('DB_STORE_DATABASE', 'ecfy_store'),
+    //     'username' => env('DB_STORE_USERNAME', 'root'),
+    //     'password' => env('DB_STORE_PASSWORD', ''),
+    //     'charset' => 'utf8mb4',
+    //     'collation' => 'utf8mb4_unicode_ci',
+    // ],
 
         'mariadb' => [
             'driver' => 'mariadb',

@@ -332,7 +332,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="input-label">Zone</label>
-                                            <select name="zone" id="zone" class="form-control" required>
+                                            <select name="zone_id" id="zone_id" class="form-control" required>
                                                 <option value="" selected>Select Zone</option>
                                                 @foreach ($zones as $zone)
                                                     <option value="{{ $zone->id }}">{{ $zone->name }}</option>
@@ -462,19 +462,9 @@
                 </div>
             </form>
         </div>
-        <script>
-            // Password validation
-            $('#dealer_form').on('submit', function(e) {
-                const password = $('#password').val();
-                const confirmPassword = $('#confirm_password').val();
-                if (password !== confirmPassword) {
-                    e.preventDefault();
-                    $('#passwordError').show();
-                } else {
-                    $('#passwordError').hide();
-                }
-            });
-        </script>
+
+   
+        
 
     </body>
 
