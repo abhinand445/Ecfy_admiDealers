@@ -10,30 +10,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 class AdminUser extends Authenticatable
 {
-    use HasFactory, HasFactory, HasApiTokens;
 
 
-     protected $table = "admin_users";
+    use HasApiTokens, HasApiTokens,  Notifiable;
 
-       protected $fillable = [
-        'name',
-        'email',
-        'email_verified_at',
-        'password',
-        'remember_token',
-    ];
+    protected $fillable = ['name', 'email', 'password', 'role'];
 
-  
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
+ 
 
     
 }

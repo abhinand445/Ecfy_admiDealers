@@ -3,20 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Dealers extends Model
+class Dealers extends Authenticatable 
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable; 
 
-     protected $fillable = [
+    protected $fillable = [
         'f_name',
         'l_name',
         'address',
         'phone',
         'email',
-        'logo',
-        'store_name',
+        'password',
         'module_id',
         'zone_id',
         'status',
@@ -24,7 +25,10 @@ class Dealers extends Model
         'longitude',
     ];
 
-    
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
     public function store()
     {
         return $this->belongsTo(Store::class);
@@ -40,4 +44,3 @@ class Dealers extends Model
         return $this->belongsTo(Zone::class);
     }
 }
-

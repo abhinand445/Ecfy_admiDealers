@@ -2,76 +2,106 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use App\Models\User; 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
 
-class RegisterController extends Controller
+
+class RegisterController extends BaseController
 {
-    public function register(Request $request): JsonResponse
+     public function register(Request $request)
     {
-        
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role_type' => 'required|in:SuperAdmin,Admin,Seller',
         ]);
 
-        $users = User::create([
+    
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
-        
-
-        if ($users) {
-            
-            $token = $users->createToken('api_token')->plainTextToken;
-
-            return response()->json([
-                'message' => 'Registration successful',
-                'token_type' => 'Bearer',
-                'token' => $token,
-                'users' => $users,
-            ], 201);
-        } else {
-            return response()->json([
-                'message' => 'Something went wrong during registration',
-            ], 500);
-        }
+        return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
     }
 
-    public function logout(Request $request): JsonResponse
+    
+   public function login(Request $request)
     {
-        if ($request->user()) { 
-            $request->user()->currentAccessToken()->delete(); 
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:8',
+        ]);
 
-            return response()->json([
-                'message' => 'Logged out successfully',
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'Not Authenticated',
-            ], 401); 
+        \Log::info($request->all());
+
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $user = Auth::user();
+
+            if ($user->hasRole('SuperAdmin')) {
+                $token = $user->createToken('SuperAdminToken')->accessToken;
+
+                return response()->json([
+                    'token' => $token,
+                    'message' => 'Logged in successfully as SuperAdmin',
+                    'user' => $user,
+                ], 200);
+            }
+
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    public function profile(Request $request): JsonResponse
+    // Create Dealer (Admin) Method (SuperAdmin creates Dealer)
+    public function store(Request $request)
     {
-        if ($request->user()) { 
-            return response()->json([
-                'message' => 'Profile fetched.',
-                'data' => $request->user() 
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'Not Authenticated',
-            ], 401); 
-        }
+        $validated = $request->validate([
+            'f_name' => 'required|string|max:255',
+            'l_name' => 'nullable|string|max:255',
+            'address' => 'required|string|max:500',
+            'phone' => 'required|string|regex:/^[0-9]{10}$/|unique:dealers,phone',
+            'email' => 'required|email|unique:dealers,email',
+            'password' => 'required|string|min:8|confirmed',
+            'module_id' => 'required|integer',
+            'zone_id' => 'required|integer',
+            'status' => 'required|boolean',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'store_name' => 'required|string|max:255',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        $validated['role'] = 'dealer'; // Assigning the dealer role to the created user
+
+        // Create the dealer (admin)
+        $dealer = User::create([
+            'name' => $validated['f_name'] . ' ' . $validated['l_name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'address' => $validated['address'],
+            'phone' => $validated['phone'],
+            'module_id' => $validated['module_id'],
+            'zone_id' => $validated['zone_id'],
+            'status' => $validated['status'],
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'store_name' => $validated['store_name'],
+            'role' => $validated['role'],
+        ]);
+
+        $dealer->assignRole('Admin'); // Assign the Admin role (dealer)
+
+        return response()->json([
+            'message' => 'Dealer created successfully',
+            'data' => $dealer,
+        ], 201);
     }
 }

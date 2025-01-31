@@ -444,9 +444,9 @@
                                             <label for="confirm_password">Confirm Password</label>
                                             <input type="password" name="confirm_password" id="confirm_password"
                                                 class="form-control" placeholder="Confirm Password" required>
-                                            <div class="text-danger" id="passwordError" style="display: none;">
-                                                Passwords do not match.
-                                            </div>
+                                            @error('confirm_password')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -454,17 +454,17 @@
                         </div>
 
                         <!-- Submit Buttons -->
-                        <div class="col-md-12 text-center mt-4">
-                            <button type="reset" class="btn btn-secondary btn-responsive" id="resetBtn">Reset</button>
-                            <button type="submit" class="btn btn-primary btn-responsive" id="submitBtn">Submit</button>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <a href="{{ route('dealers.index') }}" class="btn btn-secondary">Cancel</a>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
 
-   
-        
+
+
 
     </body>
 

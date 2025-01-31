@@ -3,123 +3,116 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
-    /**
-     * Retrieve all products.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index()
+    // Only admins can create a product
+    public function create(Request $request)
     {
-        $products = Product::all();
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Access Denied. Only admins can create products.'], 403);
+        }
 
-        return response()->json([
-            'message' => 'Products retrieved successfully',
-            'data' => $products,
-        ], 200);
-    }
-
-    /**
-     * Store a new product with image upload.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
+        // Validation rules
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'quantity' => 'required|integer|min:1',
             'qty_type' => 'required|string|max:50',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|integer|exists:categories,id',
             'sub_category' => 'nullable|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('assets/img', 'public');
-            $validated['image'] = $imagePath; 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $product = Product::create($validated);
+        
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('product_images', 'public');
+        }
+
+        $product = new Product();
+        $product->name = $request->name;
+        $product->image = $imagePath;
+        $product->quantity = $request->quantity;
+        $product->qty_type = $request->qty_type;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->category_id = $request->category_id;
+        $product->sub_category = $request->sub_category;
+        $product->dealer_id = Auth::user()->id; 
+        $product->save();
 
         return response()->json([
             'message' => 'Product created successfully',
-            'data' => $product,
+            'product' => $product
         ], 201);
+    }
+
+    public function index()
+    {
+        $products = Product::all();
+        return response()->json($products, 200);
     }
 
 
     public function show($id)
     {
         $product = Product::find($id);
-
-        if (!$product) {
-            return response()->json([
-                'message' => 'Product not found',
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'Product retrieved successfully',
-            'data' => $product,
-        ], 200);
-    }
-
-
-   public function update(Request $request, $id)
-    {
-        $product = Product::find($id);
-
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
-            'qty_type' => 'required|string|max:50',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|integer|exists:categories,id',
-            'sub_category' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('assets/img', 'public');
-            $validated['image'] = $imagePath;
-        }
-
-        $product->update($validated);
-
-        return response()->json([
-            'message' => 'Product updated successfully',
-            'data' => $product,
-        ], 200);
+        return response()->json($product, 200);
     }
 
-    public function destroy($id)
-    {
-        $product = Product::find($id);
-
-        if (!$product) {
-            return response()->json([
-                'message' => 'Product not found',
-            ], 404);
-        }
-
-        $product->delete();
-
-        return response()->json([
-            'message' => 'Product deleted successfully',
-        ], 200);
+   public function update(Request $request, $id)
+{
+    if (!Auth::check() || Auth::user()->role !== 'admin') {
+        return response()->json(['message' => 'Access Denied. Only admins can update products.'], 403);
     }
+
+    $product = Product::find($id);
+    if (!$product) {
+        return response()->json(['message' => 'Product not found'], 404);
+    }
+
+
+    $validator = Validator::make($request->all(), [
+        'name' => 'sometimes|required|string|max:255',
+        'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'quantity' => 'sometimes|required|integer|min:1',
+        'qty_type' => 'sometimes|required|string|max:50',
+        'description' => 'sometimes|nullable|string',
+        'price' => 'sometimes|required|numeric|min:0',
+        'category_id' => 'sometimes|required|integer|exists:categories,id',
+        'sub_category' => 'sometimes|nullable|string|max:255',
+        'dealer_id' => 'sometimes|required|integer|exists:users,id'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    if ($request->hasFile('image')) {
+        $product->image = $request->file('image')->store('product_images', 'public');
+    }
+
+    $product->update($request->only([
+        'name', 'quantity', 'qty_type', 'description', 'price', 'category_id', 'sub_category', 'dealer_id'
+    ]));
+
+    return response()->json([
+        'message' => 'Product updated successfully',
+        'product' => $product
+    ], 200);
+}
+
 }

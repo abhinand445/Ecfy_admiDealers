@@ -10,65 +10,82 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function showRegistrationForm()
-    {
-        return view('auth.register');
-    }
-
     public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $users = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Auth::guard('admin')->login($users);
-        auth()->guard('web')->login($users);
-
-        return redirect()->route('index');
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    // Determine the role for the new user
+    $role = 'sellers'; 
+
+    if (Auth::check()) {
+        if (Auth::user()->role === 'superAdmin') {
+            $role = 'admin'; // SuperAdmin can create Admin
+        } elseif (Auth::user()->role === 'admin') {
+            $role = 'sellers'; // Admin can create Seller
+        }
+    }
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $role,
+    ]);
+
+    Auth::guard('web')->login($user);
+
+    return redirect()->route('index');
+}
+
 
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8',
-        ]);
+  public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string|min:8',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        if (Auth::guard('web')->attempt($request->only('email', 'password'))) {
-          return redirect()->route('index');
-        }
-
-        return redirect()->back()->withErrors(['email' => 'Invalid credentials.']);
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
 
-    public function logout(Request $request)
-    {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login');
-        
+    if (Auth::guard('web')->attempt($request->only('email', 'password'))) {
+        // Check user role and redirect accordingly
+        if (Auth::user()->role === 'superAdmin') {
+            return redirect()->route('index');
+        } elseif (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif (Auth::user()->role === 'seller') {
+            return redirect()->route('seller.dashboard');
+        } else {
+            return redirect()->route('login')->withErrors(['role' => 'Unauthorized access.']);
+        }
     }
+
+    return redirect()->back()->withErrors(['email' => 'Invalid credentials.']);
+}
+
+
+  public function logout(Request $request)
+    {
+        Auth::guard('web')->logout();  
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken();  
+
+        return redirect()->route('login');  
+    }
+
 }

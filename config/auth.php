@@ -41,14 +41,24 @@ return [
             'provider' => 'users',
         ],
 
-        // 'admin' => [
-        //     'driver' => 'session',
-        //     'provider' => 'admin_users',
-        // ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
 
         'api' => [
             'driver' => 'sanctum',
             'provider' => 'users',
+        ],
+
+        'dealer' => [
+            'driver' => 'session',
+            'provider' => 'dealers',
+        ],
+
+        'dealer-api' => [
+            'driver' => 'sanctum',
+            'provider' => 'dealers',
         ],
     ],
 
@@ -72,14 +82,19 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
         ],
 
-        // 'admin_users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\AdminUser::class,
-        // ],
-   ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\AdminUser::class,
+        ],
+
+        'dealers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Dealers::class, // Ensure this model exists
+        ],
+    ],
 
    /*
    |--------------------------------------------------------------------------
