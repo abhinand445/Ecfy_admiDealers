@@ -25,6 +25,8 @@ class Categories extends Model
     // You can add relationships here, if needed, such as a parent-child relationship
     public function parent()
     {
-        return $this->belongsTo(Category::class, 'parent_id');
+        return $this->belongsTo(Categories::class, 'parent_id');
     }
+
+ 
 }

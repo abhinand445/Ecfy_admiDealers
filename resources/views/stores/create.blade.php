@@ -265,11 +265,10 @@
                                     <label class="input-label" for="store_name">Store Name</label>
                                     <input type="text" name="store_name" id="store_name" class="form-control" required>
 
-                                    @error('store_name')
-                                        <div class="text-danger">{{ $message }}</div>
+                                    @error('store_id')
+                                        <div class="text-danger"></div>
                                     @enderror
                                 </div>
-
 
                                 <div class="form-group">
                                     <label class="input-label" for="address_default">Address</label>
@@ -483,8 +482,8 @@
             }
 
             function showPosition(position) {
-                document.getElementById("latitude_store").value = position.coords.latitude;
-                document.getElementById("longitude_store").value = position.coords.longitude;
+                document.getElementById("latitude").value = position.coords.latitude;
+                document.getElementById("longitude").value = position.coords.longitude;
 
                 // Display location on map (if using Google Maps)
                 let lat = position.coords.latitude;
@@ -513,10 +512,6 @@
 
             // Trigger location fetch on page load
             window.onload = getLocation;
-        </script>
-
-        <script>
-            
         </script>
 
 

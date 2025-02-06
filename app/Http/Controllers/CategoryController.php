@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\Categories;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -15,7 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Categories::all();
 
         return response()->json([
             'message' => 'Categories retrieved successfully',
@@ -38,12 +38,12 @@ class CategoryController extends Controller
             'position' => 'nullable|integer',
             'status' => 'required|in:active,inactive',
             'priority' => 'nullable|integer',
-            'module_id' => 'required|exists:modules,id', // Assuming you have a 'modules' table
+            'module_id' => 'required|exists:modules,id',
             'slug' => 'required|string|unique:categories,slug',
             'featured' => 'nullable|boolean',
         ]);
 
-        $category = Category::create($validated);
+        $category = Categories::create($validated);
 
         return response()->json([
             'message' => 'Category created successfully',
@@ -59,7 +59,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $category = Category::find($id);
+        $category = Categories::find($id);
 
         if (!$category) {
             return response()->json([
@@ -82,7 +82,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Categor::find($id);
+        $category = Categories::find($id);
 
         if (!$category) {
             return response()->json([
@@ -118,7 +118,7 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::find($id);
+        $category = Categories::find($id);
 
         if (!$category) {
             return response()->json([

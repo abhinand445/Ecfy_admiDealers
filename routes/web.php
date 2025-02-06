@@ -21,6 +21,7 @@ Route::middleware('auth:admin')->group(function () {
 
 // Admin Index Route
 Route::get('/index', [AdminController::class, 'index'])->name('index');
+Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
 
 

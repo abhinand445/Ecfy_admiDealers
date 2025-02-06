@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 
-class zone extends Model
+class Zone extends Model
 {
-    //
-         use HasFactory;
+    use HasFactory;
 
-       protected $table = 'zones'; 
-
-
-          protected $fillable = [
+    // Define the fillable fields to allow mass assignment
+    protected $fillable = [
         'name',
         'coordinates',
         'status',
@@ -29,10 +24,4 @@ class zone extends Model
         'increase_delivery_charge_message',
         'offline_payment'
     ];
-
-    
-         
- 
-    
-   
 }

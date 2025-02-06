@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Modules;
 use App\Models\Zone;
 use App\Models\Store;
-use App\Models\Dealer;
+use App\Models\Dealers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +19,7 @@ class DealersController extends Controller
      */
     public function index()
     {
-        $dealers = Dealer::all();
+        $dealers = Dealers::all();
         return view('dealers.index', compact('dealers'));
     }
 
@@ -28,11 +28,11 @@ class DealersController extends Controller
      */
     public function createDealers()
     {
-        $stores = Store::all();
+        // $stores = Store::all();
         $modules = Modules::all();
         $zones = Zone::all();
 
-        return view('dealers.create', compact('stores', 'modules', 'zones'));
+        return view('dealers.create', compact('modules', 'zones'));
     }
 
     /**
@@ -42,20 +42,19 @@ class DealersController extends Controller
     {
         // Validate request
         $validator = Validator::make($request->all(), [
-            'store_id' => 'required|exists:stores,id',
-            'address' => 'required|string',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'module_id' => 'required|exists:modules,id',
-            'zone_id' => 'required|exists:zones,id',
-            'latitude_store' => 'required|numeric',
-            'longitude_store' => 'required|numeric',
-            'f_name' => 'required|string|max:255',
-            'l_name' => 'required|string|max:255',
-            'phone' => 'required|digits:10|unique:dealers,phone',
-            'email' => 'required|email|unique:dealers,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
 
+        'store_name' => 'required|string|max:255',
+        'address' => 'required|string',
+        'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'module_id' => 'required|exists:modules,id',
+        'zone_id' => 'required|exists:zones,id',
+        'latitude' => 'required',
+        'longitude' => 'required',
+        'f_name' => 'required|string|max:100',
+        'l_name' => 'required|string|max:100',
+        'phone' => 'required|numeric',
+        'email' => 'required|email|unique:dealers,email',
+    ]);
          
 
         if ($validator->fails()) {
@@ -69,7 +68,7 @@ class DealersController extends Controller
         }
 
         // Create the dealer
-        Dealer::create([
+        Dealers::create([
             'store_id' => $request->store_id,
             'address' => $request->address,
             'logo' => $logoPath,
