@@ -8,11 +8,7 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Retrieve all categories.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+   
     public function index()
     {
         $categories = Categories::all();
@@ -23,12 +19,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a new category.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+   
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -51,12 +42,7 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    /**
-     * Show a specific category.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function show($id)
     {
         $category = Categories::find($id);

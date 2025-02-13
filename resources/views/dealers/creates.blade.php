@@ -21,13 +21,7 @@
             <title>Document</title>
             <style>
                 /* General Page Styling */
-                body {
-                    font-family: Arial, sans-serif;
-                    background-color: #f9f9f9;
-                    margin: 0;
-                    padding: 0;
-                }
-
+               
                 .container-fluid {
                     padding: 20px;
                 }
@@ -233,14 +227,11 @@
                     }
                 }
 
-                #map {
-                    height: 400px;
-                    width: 100%;
-                }
+                /* #map {
+                        height: 400px;
+                        width: 100%;
+                    } */
             </style>
-
-
-
         </head>
 
         <body>
@@ -362,7 +353,7 @@
                                         </div>
                                         <!-- Latitude and Longitude -->
                                         <h5 class="col-12 mt-3">Map and Store Coordinates</h5>
-                                        <div class="col-md-6">
+                                        {{-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="latitude">Latitude Store</label>
                                                 <input type="text" id="latitude" name="latitude" value=""
@@ -371,16 +362,16 @@
                                                     <div class="text-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            {{-- <div class="form-group">
                                                 <label for="longitude">Longitude Store</label>
                                                 <input type="text" id="longitude" name="longitude" value=""
                                                     readonly class="form-control" placeholder="Enter Longitude" required>
                                                 @error('longitude')
                                                     <div class="text-danger">{{ $message }}</div>
                                                 @enderror
-                                            </div>
+                                            </div> --}}
                                         </div>
                                         <!-- Map Placeholder -->
                                         <div class="col-12">
@@ -456,8 +447,7 @@
 
                                             {{-- <input type="password" name="password" id="password" class="form-control"
                                                 placeholder="Password" required autocomplete="new-password"> --}}
-                                            <input type="password" name="password" id="password" class="form-control"
-                                                placeholder="Password" required autocomplete="new-password">
+                                                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required autocomplete="new-password">
 
 
                                             @error('password')
@@ -473,9 +463,7 @@
                                                 class="form-control" placeholder="Confirm Password" required
                                                 autocomplete="new-password"> --}}
 
-                                            <input type="password" name="confirm_password" id="confirm_password"
-                                                class="form-control" placeholder="Confirm Password" required
-                                                autocomplete="new-password">
+                                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm Password" required autocomplete="new-password">
 
                                             @error('confirm_password')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -496,7 +484,8 @@
             </form>
             </div>
 
-            <script>
+
+           <script>
                 function initMap() {
                     var defaultLocation = {
                         lat: 10.0159,
@@ -529,9 +518,17 @@
                 }
             </script>
 
+            <!-- Load Google Maps API with async & defer and call initMap() after it loads -->
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClsxlefHaPWrg0sxXMRaERr9JZozv_gwM"></script>
+            
+             {{-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_VALID_API_KEY&callback=initMap" async defer></script> --}}
+
+
 
 
         </body>
 
         </html>
     @endsection
+
+    

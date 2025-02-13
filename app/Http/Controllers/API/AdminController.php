@@ -27,6 +27,7 @@ class AdminController extends Controller
 
 
     // Login API
+    
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -116,5 +117,41 @@ class AdminController extends Controller
             'message' => 'Logged out successfully.',
             'data' => null
         ], 204);
+    }
+
+
+     public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['message' => __($status)], 200)
+            : response()->json(['message' => __($status)], 400);
+    }
+
+    // Reset Password
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => __($status)], 200)
+            : response()->json(['message' => __($status)], 400);
     }
 }

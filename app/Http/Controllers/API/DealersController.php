@@ -6,14 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Dealers;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class DealersController extends Controller
 {
-   
-   public function login(Request $request)
+    public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
@@ -24,23 +22,13 @@ class DealersController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed.',
-                'data' => [
-                    'errors' => $validator->errors()
-                ]
+                'data' => ['errors' => $validator->errors()]
             ], 422);
         }
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No user found with that email.',
-                'data' => null
-            ], 404);
-        }
-
-        if (!Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid credentials.',
@@ -48,33 +36,11 @@ class DealersController extends Controller
             ], 401);
         }
 
-        $token = null;
-        $roleMessage = '';
-
-        switch ($user->role) {
-            case 'superAdmin':
-                $token = $user->createToken('SuperAdminToken')->plainTextToken;
-                $roleMessage = 'Logged in successfully as SuperAdmin';
-                break;
-            case 'admin':
-                $token = $user->createToken('AdminToken')->plainTextToken;
-                $roleMessage = 'Logged in successfully as Admin';
-                break;
-            case 'user':
-                $token = $user->createToken('UserToken')->plainTextToken;
-                $roleMessage = 'Logged in successfully as User';
-                break;
-            default:
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Unauthorized role.',
-                    'data' => null
-                ], 403);
-        }
+        $token = $user->createToken('AuthToken')->plainTextToken;
 
         return response()->json([
             'status' => 'success',
-            'message' => $roleMessage,
+            'message' => 'Logged in successfully',
             'data' => [
                 'token' => $token,
                 'user' => [
@@ -87,7 +53,6 @@ class DealersController extends Controller
         ], 200);
     }
 
-    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -106,19 +71,13 @@ class DealersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed.',
-                'data' => ['errors' => $validator->errors()]
-            ], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-    
         $logoPath = $request->hasFile('logo') 
             ? $request->file('logo')->store('dealer_logos', 'public') 
             : null;
 
-        
         $dealer = Dealers::create([
             'store_name' => $request->store_name,
             'address' => $request->address,
@@ -134,28 +93,13 @@ class DealersController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-       
-        $user = User::create([
+        User::create([
             'name' => $request->f_name . ' ' . $request->l_name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'role' => 'admin' 
+            'role' => 'admin'
         ]);
 
-        $token = $user->createToken('DealerToken')->plainTextToken;
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Dealer created successfully and added to the users table.',
-            'data' => [
-                'token' => $token,
-                'dealer' => [
-                    'id' => $dealer->id,
-                    'store_name' => $dealer->store_name,
-                    'email' => $dealer->email,
-                    'phone' => $dealer->phone
-                ]
-            ]
-        ], 201);
+        return redirect( )->route('dealers.index')->with('success', 'Dealer created successfully.');
     }
 }

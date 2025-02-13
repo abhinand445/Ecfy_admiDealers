@@ -43,10 +43,13 @@ Route::get('/seller/dashboard', [SellerController::class, 'index'])->middleware(
 Route::get('/dealer/login', [DealersController::class, 'showLoginForm'])->name('dealer.login');
 Route::post('/dealer/login', [DealersController::class, 'login'])->name('dealer.login.submit');
 Route::post('/dealer/logout', [DealersController::class, 'logout'])->name('dealer.logout');
+Route::post('index', [DealersController::class, 'index'])->name('dealer.index');
 
 Route::get('createDealers', [DealersController::class, 'createDealers'])->name('dealers.create');
-Route::post('dealers', [DealersController::class, 'store'])->name('dealers.store');
-Route::get('/dealers', [DealersController::class, 'index'])->name('dealers.index');
+Route::post('/dealers/store', [DealersController::class, 'store'])->name('dealers.store');
+Route::get('/dealers/index', [DealersController::class, 'index'])->name('dealers.index');
+Route::get('/dealers{id}', [DealersController::class, 'edit'])->name('dealers.edit');
+Route::get('/dealers{id}', [DealersController::class, 'delete']);
 
 
 // Dashboard and Profile Routes (Middleware based on role)
@@ -71,6 +74,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/change-password', [DashboardController::class, 'changePassword'])->name('change-password');
 });
+
+Route::get('map',[AdminController::class, 'map']);
 
 // Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 // Route::post('/register', [AuthController::class, 'register']);

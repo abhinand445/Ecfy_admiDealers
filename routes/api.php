@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\OrderDealersController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\ZoneController;
+use App\Http\Controllers\Api\CartController;
+
 
 
 // Super Admin login
@@ -79,10 +81,30 @@ Route::delete('/zones/{id}', [ZoneController::class, 'destroy']);
 
 // Oders Deatails
 
-Route::middleware('auth:api')->prefix('orders')->group(function () {
-    Route::post('/orders', [OrdersController::class, 'createOrder']);    
-    Route::get('/orders', [OrdersController::class, 'getOrders']);     
-    Route::get('{id}', [OrdersController::class, 'showOrder']);    
-    Route::put('{id}', [OrdersController::class, 'editOrder']);    
-    Route::delete('{id}', [OrdersController::class, 'deleteOrder']); 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/order/create', [OrdersController::class, 'createOrder']); 
+    Route::get('/dealers/{id}/edit', [DealerController::class, 'edit'])->name('dealers.edit');
+    Route::delete('/dealers/{id}', [DealerController::class, 'destroy'])->name('dealers.destroy');
+
+
+});
+
+
+
+// Route::middleware('auth:api')->prefix('orders')->group(function () {
+//     Route::post('/orders', [OrdersController::class, 'createOrder']);    
+//     Route::get('/orders', [OrdersController::class, 'getOrders']);     
+//     Route::get('{id}', [OrdersController::class, 'showOrder']);    
+//     Route::put('{id}', [OrdersController::class, 'editOrder']);    
+//     Route::delete('{id}', [OrdersController::class, 'deleteOrder']); 
+// });
+
+
+// Cart Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/cart/add', [CartController::class, 'addToCart']); 
+    Route::get('/carts', [CartController::class, 'getCart']); 
+    Route::put('/cart/update', [CartController::class, 'updateCart']);
+    Route::delete('/cart/remove/{product_id}', [CartController::class, 'removeFromCart']);
+    Route::delete('/cart/clear', [CartController::class, 'clearCart']); 
 });

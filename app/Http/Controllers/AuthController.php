@@ -22,14 +22,14 @@ class AuthController extends Controller
         return redirect()->back()->withErrors($validator)->withInput();
     }
 
-    // Determine the role for the new user
+   
     $role = 'sellers'; 
 
     if (Auth::check()) {
         if (Auth::user()->role === 'superAdmin') {
-            $role = 'admin'; // SuperAdmin can create Admin
+            $role = 'admin'; 
         } elseif (Auth::user()->role === 'admin') {
-            $role = 'sellers'; // Admin can create Seller
+            $role = 'sellers'; 
         }
     }
 
@@ -63,7 +63,7 @@ class AuthController extends Controller
     }
 
     if (Auth::guard('web')->attempt($request->only('email', 'password'))) {
-        // Check user role and redirect accordingly
+       
         if (Auth::user()->role === 'superAdmin') {
             return redirect()->route('index');
         } elseif (Auth::user()->role === 'admin') {

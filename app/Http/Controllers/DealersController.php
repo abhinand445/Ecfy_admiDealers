@@ -14,62 +14,44 @@ use Illuminate\Support\Facades\Validator;
 
 class DealersController extends Controller
 {
-    /**
-     * Display a listing of the dealers.
-     */
     public function index()
     {
         $dealers = Dealers::all();
         return view('dealers.index', compact('dealers'));
     }
 
-    /**
-     * Show the form for creating a new dealer.
-     */
     public function createDealers()
     {
-        // $stores = Store::all();
         $modules = Modules::all();
         $zones = Zone::all();
-
         return view('dealers.create', compact('modules', 'zones'));
     }
 
-    /**
-     * Store a newly created dealer in storage.
-     */
     public function store(Request $request)
     {
-        // Validate request
         $validator = Validator::make($request->all(), [
-
-        'store_name' => 'required|string|max:255',
-        'address' => 'required|string',
-        'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        'module_id' => 'required|exists:modules,id',
-        'zone_id' => 'required|exists:zones,id',
-        'latitude' => 'required',
-        'longitude' => 'required',
-        'f_name' => 'required|string|max:100',
-        'l_name' => 'required|string|max:100',
-        'phone' => 'required|numeric',
-        'email' => 'required|email|unique:dealers,email',
-    ]);
-         
+            'store_name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'module_id' => 'required|exists:modules,id',
+            'zone_id' => 'required|exists:zones,id',
+            'latitude_store' => 'required',
+            'longitude_store' => 'required',
+            'f_name' => 'required|string|max:100',
+            'l_name' => 'required|string|max:100',
+            'phone' => 'required|numeric',
+            'email' => 'required|email|unique:dealers,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Handle file upload
-        $logoPath = null;
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('dealer_logos', 'public');
-        }
+        $logoPath = $request->file('logo')->store('dealer_logos', 'public');
 
-        // Create the dealer
         Dealers::create([
-            'store_id' => $request->store_id,
+            'store_name' => $request->store_name,
             'address' => $request->address,
             'logo' => $logoPath,
             'module_id' => $request->module_id,
@@ -80,27 +62,20 @@ class DealersController extends Controller
             'l_name' => $request->l_name,
             'phone' => $request->phone,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // Hash password
+            'password' => Hash::make($request->password),
         ]);
+       
 
         return redirect()->route('dealers.index')->with('success', 'Dealer added successfully.');
-       
     }
 
-    /**
-     * Show the dealer login form.
-     */
     public function showLoginForm()
     {
         return view('auth.dealer_login');
     }
 
-    /**
-     * Handle dealer login.
-     */
     public function login(Request $request)
     {
-        // Validate login credentials
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
@@ -109,25 +84,22 @@ class DealersController extends Controller
         if (Auth::guard('dealer')->attempt($request->only('email', 'password'))) {
             $user = Auth::guard('dealer')->user();
 
-            // Redirect based on role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard')->with('success', 'Welcome to the Admin Dashboard!');
-            } elseif ($user->role === 'superadmin') {
-                return redirect()->route('superadmin.dashboard')->with('success', 'Welcome to the Super Admin Dashboard!');
-            } elseif ($user->role === 'dealer') {
-                return redirect()->route('dealer.dashboard')->with('success', 'Welcome to the Dealer Dashboard!');
-            } else {
-                Auth::guard('dealer')->logout();
-                return redirect()->route('dealer.login')->withErrors(['error' => 'Unauthorized access.']);
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->route('admin.dashboard')->with('success', 'Welcome to the Admin Dashboard!');
+                case 'superadmin':
+                    return redirect()->route('superadmin.dashboard')->with('success', 'Welcome to the Super Admin Dashboard!');
+                case 'dealer':
+                    return redirect()->route('dealer.dashboard')->with('success', 'Welcome to the Dealer Dashboard!');
+                default:
+                    Auth::guard('dealer')->logout();
+                    return redirect()->route('dealer.login')->withErrors(['error' => 'Unauthorized access.']);
             }
         }
 
         return back()->withErrors(['error' => 'Invalid email or password.']);
     }
 
-    /**
-     * Handle dealer logout.
-     */
     public function logout()
     {
         Auth::guard('dealer')->logout();
